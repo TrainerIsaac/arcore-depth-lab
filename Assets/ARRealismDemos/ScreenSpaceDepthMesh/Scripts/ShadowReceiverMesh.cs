@@ -18,8 +18,11 @@
 // </copyright>
 //-----------------------------------------------------------------------
 
+using System.Collections;
 using System.Collections.Generic;
+using GoogleARCore;
 using UnityEngine;
+using UnityEngine.UI;
 
 /// <summary>
 /// Casts shadow of the attached mesh.

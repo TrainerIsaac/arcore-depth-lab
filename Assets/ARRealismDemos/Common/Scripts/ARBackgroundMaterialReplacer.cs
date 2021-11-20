@@ -18,14 +18,21 @@
 // </copyright>
 //-----------------------------------------------------------------------
 
+using System.Collections;
+using System.Collections.Generic;
+using GoogleARCore;
 using UnityEngine;
-using UnityEngine.XR.ARFoundation;
 
 /// <summary>
 /// Replaces the AR background material with the provided material.
 /// </summary>
 public class ARBackgroundMaterialReplacer : MonoBehaviour
 {
+    /// <summary>
+    /// First person camera.
+    /// </summary>
+    public GameObject FirstPersonCamera;
+
     /// <summary>
     /// Replacement material for the background renderer.
     /// </summary>
@@ -36,30 +43,31 @@ public class ARBackgroundMaterialReplacer : MonoBehaviour
     /// </summary>
     public bool DestroyMaterial = false;
 
-    private ARCameraBackground _backgroundRenderer;
-    private static readonly int _showColorOnly = Shader.PropertyToID("_ShowColorOnly");
+    private DemoARBackgroundRenderer _backgroundRenderer;
 
-    private void Start()
+    /// <summary>
+    /// Replaces the AR background material.
+    /// </summary>
+    private void ReplaceBackground()
     {
         if (ReplacementMaterial == null)
         {
             return;
         }
 
-        _backgroundRenderer = FindObjectOfType<ARCameraBackground>();
-        Debug.Assert(_backgroundRenderer);
+        if (FirstPersonCamera == null)
+        {
+            FirstPersonCamera = Camera.main.gameObject;
+        }
 
-        _backgroundRenderer.useCustomMaterial = true;
-        _backgroundRenderer.customMaterial = ReplacementMaterial;
-
-        // Reset background renderer to apply custom material change.
-        _backgroundRenderer.enabled = false;
-        _backgroundRenderer.enabled = true;
+        _backgroundRenderer = FirstPersonCamera.GetComponent<DemoARBackgroundRenderer>();
 
         // Resets the fragment shader.
-        if (ReplacementMaterial.HasProperty(_showColorOnly))
+        ReplacementMaterial.SetFloat("_ShowColorOnly", 0f);
+
+        if (_backgroundRenderer != null)
         {
-            ReplacementMaterial.SetFloat(_showColorOnly, 0f);
+            _backgroundRenderer.SwapBackgroundMaterial(ReplacementMaterial);
         }
     }
 
@@ -68,29 +76,25 @@ public class ARBackgroundMaterialReplacer : MonoBehaviour
     /// </summary>
     private void UndoReplace()
     {
-        if (_backgroundRenderer != null && _backgroundRenderer.useCustomMaterial)
+        if (_backgroundRenderer != null)
         {
-            _backgroundRenderer.useCustomMaterial = false;
-
-            // Reset background renderer to apply custom material change.
-            _backgroundRenderer.enabled = false;
-            _backgroundRenderer.enabled = true;
+            _backgroundRenderer.ResetBackgroundMaterial();
         }
     }
 
     private void OnDestroy()
     {
-        UndoReplace();
-
         // Sets the fragment shader to show only the camera image.
-        if (ReplacementMaterial.HasProperty(_showColorOnly))
-        {
-            ReplacementMaterial.SetFloat(_showColorOnly, 1f);
-        }
+        ReplacementMaterial.SetFloat("_ShowColorOnly", 1f);
 
         if (DestroyMaterial && ReplacementMaterial != null)
         {
             DestroyImmediate(ReplacementMaterial);
         }
+    }
+
+    private void Start()
+    {
+        ReplaceBackground();
     }
 }

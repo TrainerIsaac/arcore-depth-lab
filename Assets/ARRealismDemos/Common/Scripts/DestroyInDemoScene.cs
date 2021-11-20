@@ -26,14 +26,6 @@ using UnityEngine.SceneManagement;
 /// </summary>
 public class DestroyInDemoScene : MonoBehaviour
 {
-#if UNITY_EDITOR
-    /// <summary>
-    /// Indicates whether to disable this component during building time if current scene is not
-    /// the base scne which controls scene switch.
-    /// </summary>
-    public bool ShouldDstroyInDemoScene = true;
-#endif
-
     private void Awake()
     {
         // This destroys the current gameObject if it was loaded into another scene.
