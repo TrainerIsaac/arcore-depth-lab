@@ -2231,14 +2231,6 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 96cb3cc66f38c47f2aa17b624a621750, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  Extensions: {fileID: 842128784}
-  RecordButton: {fileID: 313808335}
-  StopRecordingButton: {fileID: 322677514}
-  PlaybackButton: {fileID: 1064976679}
-  StopPlayingbackButton: {fileID: 1853516168}
-  CarouselUIToggle: {fileID: 302431279}
-  Carousel3D: {fileID: 1707748816}
-  RecordingTimerText: {fileID: 437321902}
 --- !u!1 &842128783
 GameObject:
   m_ObjectHideFlags: 0
@@ -2268,12 +2260,6 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 1b50ad3f5d9024549b0a549c5a03a084, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  Session: {fileID: 866108690}
-  SessionOrigin: {fileID: 866108689}
-  CameraManager: {fileID: 866108688}
-  ARCoreExtensionsConfig: {fileID: 11400000, guid: f5c95363f2d2840e69cd7177c1489c66,
-    type: 2}
-  CameraConfigFilter: {fileID: 11400000, guid: 7a7903b7d626c4c9f9bdb80742b7a295, type: 2}
 --- !u!4 &842128785
 Transform:
   m_ObjectHideFlags: 0
@@ -2440,42 +2426,6 @@ PrefabInstance:
     m_RemovedComponents:
     - {fileID: 5734534533885354491, guid: 7a8ecf3d4912445268257c5eee428c32, type: 3}
   m_SourcePrefab: {fileID: 100100000, guid: 7a8ecf3d4912445268257c5eee428c32, type: 3}
---- !u!114 &866108688 stripped
-MonoBehaviour:
-  m_CorrespondingSourceObject: {fileID: 8347481876615363893, guid: 7a8ecf3d4912445268257c5eee428c32,
-    type: 3}
-  m_PrefabInstance: {fileID: 866108687}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 0}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 4966719baa26e4b0e8231a24d9bd491a, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
---- !u!114 &866108689 stripped
-MonoBehaviour:
-  m_CorrespondingSourceObject: {fileID: 8516330644003832340, guid: 7a8ecf3d4912445268257c5eee428c32,
-    type: 3}
-  m_PrefabInstance: {fileID: 866108687}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 2040780289}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 520bb47c46cf8624fafb307b7d1b862a, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
---- !u!114 &866108690 stripped
-MonoBehaviour:
-  m_CorrespondingSourceObject: {fileID: 2188960333727717391, guid: 7a8ecf3d4912445268257c5eee428c32,
-    type: 3}
-  m_PrefabInstance: {fileID: 866108687}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 0}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 3859a92a05d4f5d418cb6ca605290e74, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
 --- !u!1 &879166060
 GameObject:
   m_ObjectHideFlags: 0

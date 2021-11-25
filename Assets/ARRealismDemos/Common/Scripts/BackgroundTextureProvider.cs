@@ -18,14 +18,15 @@
 // </copyright>
 //-----------------------------------------------------------------------
 
+
+using GoogleARCore;
 using UnityEngine;
 using UnityEngine.Rendering;
-using UnityEngine.XR.ARFoundation;
 
 /// <summary>
 /// Exposes the device's camera as a global shader texture with id equal to
 /// BackgroundTextureProvider.BackgroundTexturePropertyName.
-/// Can be placed anywhere in the scene, requires presence of ARCameraBackground.
+/// Can be placed anywhere in the scene, requires presense of ARCoreBackgroundRenderer.
 /// </summary>
 public class BackgroundTextureProvider : MonoBehaviour
 {
@@ -34,65 +35,53 @@ public class BackgroundTextureProvider : MonoBehaviour
     /// </summary>
     public const string BackgroundTexturePropertyName = "_BackgroundTexture";
 
-    public Material BackgroundMaterial;
-
-    private Camera _arCamera;
-    private ARCameraBackground _backgroundRenderer;
+    private Camera _camera;
+    private ARCoreBackgroundRenderer _backgroundRenderer;
     private CommandBuffer _commandBuffer;
     private int _backgroundTextureID = -1;
 
-    private static readonly int _mainTex = Shader.PropertyToID("_MainTex");
-
-    private void Start()
+    private void Awake()
     {
-        _arCamera = DepthSource.ARCamera;
+        _camera = Camera.main;
+        Debug.Assert(_camera != null,
+                     "The scene must include a camera object to get the background texture.");
 
-        Debug.Assert(_arCamera != null,
-            "The scene must include a camera object to get the background texture.");
-        Debug.Assert(BackgroundMaterial);
-
-        _backgroundRenderer = _arCamera.GetComponent<ARCameraBackground>();
+        _backgroundRenderer = FindObjectOfType<ARCoreBackgroundRenderer>();
         if (_backgroundRenderer == null)
         {
-            Debug.LogError(
-                "BackgroundTextureProvider requires ARCameraBackground " +
-                "anywhere in the scene.");
+            Debug.LogError("BackgroundTextureProvider requires ARCoreBackgroundRenderer " +
+                            "anywhere in the scene.");
             return;
         }
 
-        _backgroundRenderer.enabled = false;
-        _backgroundRenderer.enabled = true;
         _commandBuffer = new CommandBuffer();
         _commandBuffer.name = "Camera texture";
         _backgroundTextureID = Shader.PropertyToID(BackgroundTexturePropertyName);
         _commandBuffer.GetTemporaryRT(_backgroundTextureID, /*width=*/ -1, /*height=*/ -1,
-            /*depthBuffer=*/ 0, FilterMode.Bilinear);
+                                       /*depthBuffer=*/ 0, FilterMode.Bilinear);
 
         // Alternatively, can blit from BuiltinRenderTextureType.CameraTarget into
         // _backgroundTextureID, but make sure this is executed after the renderer is initialized.
-        _commandBuffer.Blit(
-            _backgroundRenderer.material.GetTexture(_mainTex), _backgroundTextureID,
-            BackgroundMaterial);
+        var material = _backgroundRenderer.BackgroundMaterial;
+        if (material != null)
+        {
+            _commandBuffer.Blit(material.mainTexture, _backgroundTextureID, material);
+        }
 
         _commandBuffer.SetGlobalTexture(BackgroundTexturePropertyName, _backgroundTextureID);
-        _arCamera.AddCommandBuffer(CameraEvent.BeforeForwardOpaque, _commandBuffer);
+        _camera.AddCommandBuffer(CameraEvent.AfterForwardOpaque, _commandBuffer);
+        _camera.AddCommandBuffer(CameraEvent.AfterGBuffer, _commandBuffer);
     }
 
     private void OnEnable()
     {
-        if (_arCamera != null && _commandBuffer != null)
-        {
-            _arCamera.AddCommandBuffer(
-                CameraEvent.BeforeForwardOpaque, _commandBuffer);
-        }
+        _camera.AddCommandBuffer(CameraEvent.AfterForwardOpaque, _commandBuffer);
+        _camera.AddCommandBuffer(CameraEvent.AfterGBuffer, _commandBuffer);
     }
 
     private void OnDisable()
     {
-        if (_arCamera != null && _commandBuffer != null)
-        {
-            _arCamera.RemoveCommandBuffer(
-                CameraEvent.BeforeForwardOpaque, _commandBuffer);
-        }
+        _camera.RemoveCommandBuffer(CameraEvent.AfterForwardOpaque, _commandBuffer);
+        _camera.RemoveCommandBuffer(CameraEvent.AfterGBuffer, _commandBuffer);
     }
 }

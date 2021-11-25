@@ -18,13 +18,10 @@
 // </copyright>
 //-----------------------------------------------------------------------
 
-using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.Events;
 using UnityEngine.Serialization;
-using UnityEngine.XR.ARFoundation;
-using UnityEngine.XR.ARSubsystems;
 
 /// <summary>
 /// Manages the collision physics and events when the user throws a virtual game object (projectile)
@@ -47,7 +44,14 @@ public class DepthMeshCollider : MonoBehaviour
     /// <summary>
     /// An array of game object thrown by the user.
     /// </summary>
-    [FormerlySerializedAs("projectiles")] public GameObject[] Projectiles;
+    [FormerlySerializedAs("projectiles")]
+    public GameObject[] Projectiles;
+
+    /// <summary>
+    /// Camera of the scene.
+    /// </summary>
+    [FormerlySerializedAs("sceneCamera")]
+    public GameObject SceneCamera;
 
     /// <summary>
     /// Life time in seconds of the thrown game object.
@@ -58,7 +62,8 @@ public class DepthMeshCollider : MonoBehaviour
     /// <summary>
     /// Whether to enable the renderer.
     /// </summary>
-    [FormerlySerializedAs("render")] public bool Render = false;
+    [FormerlySerializedAs("render")]
+    public bool Render = false;
 
     /// <summary>
     /// Flag to enable sparse depth.
@@ -115,20 +120,6 @@ public class DepthMeshCollider : MonoBehaviour
     private int _meshHeight;
     private GameObject _root = null;
     private List<GameObject> _gameObjects = new List<GameObject>();
-    private bool _cachedUseRawDepth = false;
-    private AROcclusionManager _occlusionManager;
-    private Texture2D _depthTexture;
-
-    public int health = 100;
-    //public Slider mSlider;
-    public GameObject projectile;
-    public int attackStat;
-    public int defenceStat;
-    private GameObject bullet;
-    private bool coolDown;
-
-    public GameObject depthChecker;
-    private Quaternion depthFireDirection;
 
     /// <summary>
     /// Throws a game object for the collision test.
@@ -143,25 +134,20 @@ public class DepthMeshCollider : MonoBehaviour
     /// </summary>
     public void ShootPrefab()
     {
-        //if (_root == null)
-        //{
-        //    _root = new GameObject("Projectiles");
-        //}
+        if (_root == null)
+        {
+            _root = new GameObject("Projectiles");
+        }
 
-        //Vector3 touchPos = DepthSource.ARCamera.ScreenToWorldPoint((Vector3)Input.GetTouch(0).position + new Vector3(0, 0, 0.1f));
+        GameObject bullet = Instantiate(
+            Projectiles[_random.Next(Projectiles.Length)],
+            SceneCamera.transform.position + (SceneCamera.transform.forward * ForwardOffset),
+            Quaternion.identity) as GameObject;
 
-        //Vector3 dir = touchPos - (new Vector3(transform.position.x, transform.position.y, transform.position.z));
-        //dir.Normalize();
-
-        //GameObject bullet = Instantiate(
-        //    projectile,
-        //    touchPos,
-        //    Quaternion.LookRotation(dir));
-
-        //Vector3 forceVector = DepthSource.ARCamera.transform.forward * ProjectileThrust;
-        //bullet.GetComponent<Rigidbody>().velocity = forceVector;
-        //bullet.transform.parent = _root.transform;
-        //_gameObjects.Add(bullet);
+        Vector3 forceVector = SceneCamera.transform.forward * ProjectileThrust;
+        bullet.GetComponent<Rigidbody>().velocity = forceVector;
+        bullet.transform.parent = _root.transform;
+        _gameObjects.Add(bullet);
     }
 
     /// <summary>
@@ -225,8 +211,6 @@ public class DepthMeshCollider : MonoBehaviour
 
     private void OnDestroy()
     {
-        ARSession.stateChanged -= OnSessionStateChanged;
-
         Clear();
         if (_root != null)
         {
@@ -243,34 +227,14 @@ public class DepthMeshCollider : MonoBehaviour
         _meshCollider = GetComponent<MeshCollider>();
         GetComponent<MeshRenderer>().enabled = Render;
 
-        _occlusionManager = FindObjectOfType<AROcclusionManager>();
-        Debug.Assert(_occlusionManager);
-
-        ARSession.stateChanged += OnSessionStateChanged;
+        if (SceneCamera == null)
+        {
+            SceneCamera = Camera.main.gameObject;
+        }
     }
 
     private void Update()
     {
-        Vector3 playerPos = DepthSource.ARCamera.transform.position;
-        
-        if (Input.touchCount > 0)
-        {
-            if (Input.GetTouch(0).phase == TouchPhase.Began && coolDown == false)
-            {
-                ShootProjectile();
-                Vector3 touchPos = DepthSource.ARCamera.ScreenToWorldPoint((Vector3)Input.GetTouch(0).position + new Vector3(0, 0, 0.1f));
-
-                Vector3 dir = touchPos - (new Vector3(playerPos.x, playerPos.y, playerPos.z));
-                dir.Normalize();
-
-                bullet = Instantiate(projectile, touchPos, Quaternion.LookRotation(dir)) as GameObject;
-                bullet.GetComponent<ProjectileScript>().Origin = DepthSource.ARCamera.gameObject;
-                coolDown = true;
-                StartCoroutine(BulletCool());
-                bullet.transform.parent = _root.transform;
-            }
-        }
-
         if (_initialized)
         {
             if (_getDataCountdown > 0)
@@ -279,7 +243,6 @@ public class DepthMeshCollider : MonoBehaviour
             }
             else if (_getDataCountdown == 0)
             {
-                UpdateDepthTexture();
                 UpdateCollider();
             }
         }
@@ -287,36 +250,15 @@ public class DepthMeshCollider : MonoBehaviour
         {
             if (DepthSource.Initialized)
             {
-                if (_cachedUseRawDepth != UseRawDepth)
-                {
-                    DepthSource.SwitchToRawDepth(UseRawDepth);
-                    _cachedUseRawDepth = UseRawDepth;
-                }
-
                 _meshWidth = DepthSource.DepthWidth / _depthPixelSkippingX;
                 _meshHeight = DepthSource.DepthHeight / _depthPixelSkippingY;
                 _numElements = _meshWidth * _meshHeight;
 
-                UpdateDepthTexture();
                 InitializeComputeShader();
                 InitializeMesh();
                 _initialized = true;
             }
         }
-
-        Vector3 randomDir = new Vector3(Random.Range(-15, 15), Random.Range(-15, 15), Random.Range(0, 80));
-        Vector3 checkDir = DepthSource.ARCamera.ScreenToWorldPoint(new Vector3(500, 1000, 0.3f));
-        Quaternion playerDir = GameObject.FindGameObjectWithTag("MainCamera").transform.rotation;
-
-        Vector3 newdir = checkDir - new Vector3(playerPos.x, playerPos.y, playerPos.z);
-        newdir.Normalize();
-
-        depthFireDirection = Quaternion.LookRotation(newdir + randomDir) * playerDir;
-
-        //ShootProjectile();
-        depthChecker.GetComponent<DepthChecker>().fireRotation = depthFireDirection;
-        Instantiate(depthChecker, checkDir, depthFireDirection);
-        depthChecker.transform.parent = _root.transform;
     }
 
     private void InitializeMesh()
@@ -364,6 +306,10 @@ public class DepthMeshCollider : MonoBehaviour
         _vertexBuffer = new ComputeBuffer(_numElements, sizeof(float) * 3);
         _normalBuffer = new ComputeBuffer(_numElements, sizeof(float) * 3);
 
+        Texture2D depthTexture =
+            UseRawDepth ? DepthSource.RawDepthTexture :
+            DepthSource.DepthTexture;
+
         // Sets general compute shader variables.
         DepthProcessingCS.SetInt("DepthWidth", DepthSource.ImageDimensions.x);
         DepthProcessingCS.SetInt("DepthHeight", DepthSource.ImageDimensions.y);
@@ -381,6 +327,7 @@ public class DepthMeshCollider : MonoBehaviour
         DepthProcessingCS.SetFloat("EdgeExtensionDepthOffset", _edgeExtensionDepthOffset);
 
         // Sets shader resources for the vertex function.
+        DepthProcessingCS.SetTexture(_vertexFromDepthHandle, "depthTex", depthTexture);
         DepthProcessingCS.SetBuffer(_vertexFromDepthHandle, "vertexBuffer", _vertexBuffer);
 
         // Sets shader resources for the normal function.
@@ -430,45 +377,10 @@ public class DepthMeshCollider : MonoBehaviour
 
     private void UpdateComputeShaderVariables()
     {
-        DepthProcessingCS.SetTexture(_vertexFromDepthHandle, "depthTex", _depthTexture);
+        Texture2D depthTexture = UseRawDepth ? DepthSource.RawDepthTexture :
+            DepthSource.DepthTexture;
+
+        DepthProcessingCS.SetTexture(_vertexFromDepthHandle, "depthTex", depthTexture);
         DepthProcessingCS.SetMatrix("ModelTransform", DepthSource.LocalToWorldMatrix);
-    }
-
-    private void OnSessionStateChanged(ARSessionStateChangedEventArgs eventArgs)
-    {
-        if (eventArgs.state == ARSessionState.SessionInitializing)
-        {
-            // Clear all projectiles for a new session.
-            Clear();
-        }
-    }
-
-    private void UpdateDepthTexture()
-    {
-        if (_occlusionManager.TryAcquireEnvironmentDepthCpuImage(out XRCpuImage image))
-        {
-            UpdateRawImage(ref _depthTexture, image);
-        }
-
-        image.Dispose();
-    }
-
-    private void UpdateRawImage(ref Texture2D texture, XRCpuImage cpuImage)
-    {
-        if (texture == null || texture.width != cpuImage.width || texture.height != cpuImage.height)
-        {
-            texture = new Texture2D(cpuImage.width, cpuImage.height, TextureFormat.RGB565, false);
-        }
-
-        var conversionParams = new XRCpuImage.ConversionParams(cpuImage, TextureFormat.R16);
-        var rawTextureData = texture.GetRawTextureData<byte>();
-        cpuImage.Convert(conversionParams, rawTextureData);
-        texture.Apply();
-    }
-
-    IEnumerator BulletCool()
-    {
-        yield return new WaitForSeconds(1 / 3);
-        coolDown = false;
     }
 }

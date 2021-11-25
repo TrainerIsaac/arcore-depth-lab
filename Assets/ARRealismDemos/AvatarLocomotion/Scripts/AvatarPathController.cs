@@ -105,8 +105,7 @@ public class AvatarPathController : MonoBehaviour
     {
         if (!_firstWaypointPlaced)
         {
-            Vector3 toCamera =
-                DepthSource.ARCamera.transform.position - DepthCursor.transform.position;
+            Vector3 toCamera = Camera.main.transform.position - DepthCursor.transform.position;
 
             Andy.transform.position = DepthCursor.transform.position +
                 (toCamera.normalized * _avatarOffset);

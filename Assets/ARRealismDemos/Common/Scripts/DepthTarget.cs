@@ -54,7 +54,6 @@ public class DepthTarget : MonoBehaviour
             }
         }
 
-        DepthSource.SwitchToRawDepth(UseRawDepth);
         DepthSource.AddDepthTarget(this);
     }
 
