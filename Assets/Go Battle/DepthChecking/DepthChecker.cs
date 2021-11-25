@@ -90,16 +90,13 @@ public class DepthChecker : MonoBehaviour
         }
     }
 
-    private void OnTriggerEnter(Collider other)
+    private void OnCollisionEnter(Collision collision)
     {
-        if (other.gameObject.tag == ("EnvironmentPiece"))
+        if (collision.gameObject.GetComponent<TouchingDepth>() != null)
         {
             Destroy(gameObject);
         }
-    }
 
-    private void OnCollisionEnter(Collision collision)
-    {
         if (collision.gameObject.GetComponent<DepthMeshCollider>() != null)
         {
 

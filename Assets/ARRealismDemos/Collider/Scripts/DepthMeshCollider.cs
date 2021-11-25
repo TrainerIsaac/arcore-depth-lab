@@ -129,6 +129,9 @@ public class DepthMeshCollider : MonoBehaviour
 
     public GameObject depthChecker;
     private Quaternion depthFireDirection;
+    private bool isChecking = false;
+    private bool spacesAvailable = true;
+    public GameObject enviroChecker;
 
     /// <summary>
     /// Throws a game object for the collision test.
@@ -304,6 +307,33 @@ public class DepthMeshCollider : MonoBehaviour
             }
         }
 
+        //if (enviroChecker.GetComponent<CheckForEnviroPieces>().piecesInRange >= 5)
+        //{
+        //    isChecking = true;
+        //}
+
+        //else
+        //{
+        //    if(spacesAvailable == true)
+        //    {
+        //        spacesAvailable = false;
+        //        isChecking = false;
+        //    }
+        //}
+
+        if (isChecking == false)
+        {
+            StartCoroutine(FireDepth());
+        }
+    }
+
+    IEnumerator FireDepth()
+    {
+        isChecking = true;
+
+        ShootProjectile();
+        Vector3 playerPos = DepthSource.ARCamera.transform.position;
+
         Vector3 randomDir = new Vector3(Random.Range(-15, 15), Random.Range(-15, 15), Random.Range(0, 80));
         Vector3 checkDir = DepthSource.ARCamera.ScreenToWorldPoint(new Vector3(500, 1000, 0.3f));
         Quaternion playerDir = GameObject.FindGameObjectWithTag("MainCamera").transform.rotation;
@@ -313,12 +343,15 @@ public class DepthMeshCollider : MonoBehaviour
 
         depthFireDirection = Quaternion.LookRotation(newdir + randomDir) * playerDir;
 
-        //ShootProjectile();
         depthChecker.GetComponent<DepthChecker>().fireRotation = depthFireDirection;
         Instantiate(depthChecker, checkDir, depthFireDirection);
         depthChecker.transform.parent = _root.transform;
-    }
 
+        yield return new WaitForSeconds(0.2f);
+        spacesAvailable = true;
+        isChecking = false;
+
+    }
     private void InitializeMesh()
     {
         // Creates template vertices.
