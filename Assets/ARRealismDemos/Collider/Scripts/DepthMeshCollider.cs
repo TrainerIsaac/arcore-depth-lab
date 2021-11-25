@@ -18,6 +18,7 @@
 // </copyright>
 //-----------------------------------------------------------------------
 
+using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.Events;
@@ -118,6 +119,17 @@ public class DepthMeshCollider : MonoBehaviour
     private AROcclusionManager _occlusionManager;
     private Texture2D _depthTexture;
 
+    public int health = 100;
+    //public Slider mSlider;
+    public GameObject projectile;
+    public int attackStat;
+    public int defenceStat;
+    private GameObject bullet;
+    private bool coolDown;
+
+    public GameObject depthChecker;
+    private Quaternion depthFireDirection;
+
     /// <summary>
     /// Throws a game object for the collision test.
     /// </summary>
@@ -131,21 +143,25 @@ public class DepthMeshCollider : MonoBehaviour
     /// </summary>
     public void ShootPrefab()
     {
-        if (_root == null)
-        {
-            _root = new GameObject("Projectiles");
-        }
+        //if (_root == null)
+        //{
+        //    _root = new GameObject("Projectiles");
+        //}
 
-        GameObject bullet = Instantiate(
-            Projectiles[_random.Next(Projectiles.Length)],
-            DepthSource.ARCamera.transform.position +
-            (DepthSource.ARCamera.transform.forward * ForwardOffset),
-            Quaternion.identity);
+        //Vector3 touchPos = DepthSource.ARCamera.ScreenToWorldPoint((Vector3)Input.GetTouch(0).position + new Vector3(0, 0, 0.1f));
 
-        Vector3 forceVector = DepthSource.ARCamera.transform.forward * ProjectileThrust;
-        bullet.GetComponent<Rigidbody>().velocity = forceVector;
-        bullet.transform.parent = _root.transform;
-        _gameObjects.Add(bullet);
+        //Vector3 dir = touchPos - (new Vector3(transform.position.x, transform.position.y, transform.position.z));
+        //dir.Normalize();
+
+        //GameObject bullet = Instantiate(
+        //    projectile,
+        //    touchPos,
+        //    Quaternion.LookRotation(dir));
+
+        //Vector3 forceVector = DepthSource.ARCamera.transform.forward * ProjectileThrust;
+        //bullet.GetComponent<Rigidbody>().velocity = forceVector;
+        //bullet.transform.parent = _root.transform;
+        //_gameObjects.Add(bullet);
     }
 
     /// <summary>
@@ -235,6 +251,26 @@ public class DepthMeshCollider : MonoBehaviour
 
     private void Update()
     {
+        Vector3 playerPos = DepthSource.ARCamera.transform.position;
+        
+        if (Input.touchCount > 0)
+        {
+            if (Input.GetTouch(0).phase == TouchPhase.Began && coolDown == false)
+            {
+                ShootProjectile();
+                Vector3 touchPos = DepthSource.ARCamera.ScreenToWorldPoint((Vector3)Input.GetTouch(0).position + new Vector3(0, 0, 0.1f));
+
+                Vector3 dir = touchPos - (new Vector3(playerPos.x, playerPos.y, playerPos.z));
+                dir.Normalize();
+
+                bullet = Instantiate(projectile, touchPos, Quaternion.LookRotation(dir)) as GameObject;
+                bullet.GetComponent<ProjectileScript>().Origin = DepthSource.ARCamera.gameObject;
+                coolDown = true;
+                StartCoroutine(BulletCool());
+                bullet.transform.parent = _root.transform;
+            }
+        }
+
         if (_initialized)
         {
             if (_getDataCountdown > 0)
@@ -267,6 +303,20 @@ public class DepthMeshCollider : MonoBehaviour
                 _initialized = true;
             }
         }
+
+        Vector3 randomDir = new Vector3(Random.Range(-15, 15), Random.Range(-15, 15), Random.Range(0, 80));
+        Vector3 checkDir = DepthSource.ARCamera.ScreenToWorldPoint(new Vector3(500, 1000, 0.3f));
+        Quaternion playerDir = GameObject.FindGameObjectWithTag("MainCamera").transform.rotation;
+
+        Vector3 newdir = checkDir - new Vector3(playerPos.x, playerPos.y, playerPos.z);
+        newdir.Normalize();
+
+        depthFireDirection = Quaternion.LookRotation(newdir + randomDir) * playerDir;
+
+        //ShootProjectile();
+        depthChecker.GetComponent<DepthChecker>().fireRotation = depthFireDirection;
+        Instantiate(depthChecker, checkDir, depthFireDirection);
+        depthChecker.transform.parent = _root.transform;
     }
 
     private void InitializeMesh()
@@ -414,5 +464,11 @@ public class DepthMeshCollider : MonoBehaviour
         var rawTextureData = texture.GetRawTextureData<byte>();
         cpuImage.Convert(conversionParams, rawTextureData);
         texture.Apply();
+    }
+
+    IEnumerator BulletCool()
+    {
+        yield return new WaitForSeconds(1 / 3);
+        coolDown = false;
     }
 }

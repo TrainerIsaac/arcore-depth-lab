@@ -1,5 +1,14 @@
 {
   "dependencies": {
+    "com.google.ar.core.arfoundation.extensions": {
+      "version": "file:E:/Current Projects/AR Game/arcore-unity-extensions-1.28.0.tgz",
+      "depth": 0,
+      "source": "local-tarball",
+      "dependencies": {
+        "com.unity.xr.arfoundation": "4.1.5",
+        "com.unity.xr.arcore": "4.1.5"
+      }
+    },
     "com.unity.ext.nunit": {
       "version": "1.0.6",
       "depth": 1,
