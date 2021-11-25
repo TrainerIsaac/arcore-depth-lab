@@ -1,0 +1,13 @@
+fileFormatVersion: 2
+<<<<<<< HEAD:Assets/ARRealismDemos/Relighting/Shaders/ArCoreVertex.glslinc.meta
+guid: 32d40ed101142774d83c70446fe8b020
+=======
+guid: b115bfedab5c749faaf221344cf35faa
+>>>>>>> parent of 07c8907 (Merge branch 'master' of https://github.com/TrainerIsaac/arcore-depth-lab):Assets/ARRealismDemos/AvatarLocomotion/Models/Robochef/Shaders/FullTransparency.shader.meta
+ShaderImporter:
+  externalObjects: {}
+  defaultTextures: []
+  nonModifiableTextures: []
+  userData: 
+  assetBundleName: 
+  assetBundleVariant: 

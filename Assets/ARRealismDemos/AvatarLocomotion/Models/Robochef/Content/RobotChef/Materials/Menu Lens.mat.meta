@@ -1,0 +1,12 @@
+fileFormatVersion: 2
+<<<<<<< HEAD:Assets/Prefabs/AR/Effects & Materials/New Material 1.mat.meta
+guid: ed3a7cad938585343b5516024dca42e6
+=======
+guid: a7aa6123556cf41498c64d58630606be
+>>>>>>> parent of 07c8907 (Merge branch 'master' of https://github.com/TrainerIsaac/arcore-depth-lab):Assets/ARRealismDemos/AvatarLocomotion/Models/Robochef/Content/RobotChef/Materials/Menu Lens.mat.meta
+NativeFormatImporter:
+  externalObjects: {}
+  mainObjectFileID: 2100000
+  userData: 
+  assetBundleName: 
+  assetBundleVariant: 

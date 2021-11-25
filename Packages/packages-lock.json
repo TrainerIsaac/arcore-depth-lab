@@ -1,7 +1,7 @@
 {
   "dependencies": {
     "com.google.ar.core.arfoundation.extensions": {
-      "version": "file:C:/Users/isaac/Downloads/arcore-unity-extensions-1.28.0.tgz",
+      "version": "file:E:/Current Projects/AR Game/arcore-unity-extensions-1.28.0.tgz",
       "depth": 0,
       "source": "local-tarball",
       "dependencies": {

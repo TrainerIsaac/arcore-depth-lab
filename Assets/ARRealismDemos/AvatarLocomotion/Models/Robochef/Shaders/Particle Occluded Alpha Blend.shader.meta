@@ -1,0 +1,13 @@
+fileFormatVersion: 2
+<<<<<<< HEAD:Assets/ARRealismDemos/Relighting/Shaders/DGAA.glslinc.meta
+guid: ff59ba064b38e034492a9733297b6c49
+=======
+guid: 4edb13d6dc11c6a4aa98c0e84cfbad42
+>>>>>>> parent of 07c8907 (Merge branch 'master' of https://github.com/TrainerIsaac/arcore-depth-lab):Assets/ARRealismDemos/AvatarLocomotion/Models/Robochef/Shaders/Particle Occluded Alpha Blend.shader.meta
+ShaderImporter:
+  externalObjects: {}
+  defaultTextures: []
+  nonModifiableTextures: []
+  userData: 
+  assetBundleName: 
+  assetBundleVariant: 

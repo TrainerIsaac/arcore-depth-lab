@@ -1,0 +1,14 @@
+fileFormatVersion: 2
+<<<<<<< HEAD:Assets/Shaders/PlaneOcclusion/PlaneOcclusion.shader.meta
+guid: d6144cdfb4670c840aba02c8b2d8fbeb
+=======
+guid: 98b0b4bd0cfec4574b68f88cbcb8cfcf
+>>>>>>> parent of 07c8907 (Merge branch 'master' of https://github.com/TrainerIsaac/arcore-depth-lab):Assets/ARRealismDemos/DepthEffects/Shaders/BackgroundToDepth.shader.meta
+ShaderImporter:
+  externalObjects: {}
+  defaultTextures: []
+  nonModifiableTextures: []
+  preprocessorOverride: 0
+  userData: 
+  assetBundleName: 
+  assetBundleVariant: 

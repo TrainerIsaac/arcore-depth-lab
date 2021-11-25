@@ -1,0 +1,12 @@
+fileFormatVersion: 2
+<<<<<<< HEAD:Assets/Shaders/PlaneOcclusion/New Material.mat.meta
+guid: ddad0484b1261f941a2a2251cc6b0156
+=======
+guid: 0fa42b8aacc5c2949849c0ea9740eaa4
+>>>>>>> parent of 07c8907 (Merge branch 'master' of https://github.com/TrainerIsaac/arcore-depth-lab):Assets/ARRealismDemos/AvatarLocomotion/Models/Robochef/Content/RobotChef/Materials/MatRobotChefGlass.mat.meta
+NativeFormatImporter:
+  externalObjects: {}
+  mainObjectFileID: 2100000
+  userData: 
+  assetBundleName: 
+  assetBundleVariant: 

@@ -1,0 +1,12 @@
+fileFormatVersion: 2
+<<<<<<< HEAD:Assets/Prefabs/AR/Effects & Materials/New Material.mat.meta
+guid: 5abfa0d4006ecc84bbe9b77f2f99d0c6
+=======
+guid: ecba481b7b3cdd045abd8abb2e0c995a
+>>>>>>> parent of 07c8907 (Merge branch 'master' of https://github.com/TrainerIsaac/arcore-depth-lab):Assets/ARRealismDemos/AvatarLocomotion/Models/Robochef/Content/RobotChef/Materials/RobotChef_DepthOcclusion.mat.meta
+NativeFormatImporter:
+  externalObjects: {}
+  mainObjectFileID: 2100000
+  userData: 
+  assetBundleName: 
+  assetBundleVariant: 

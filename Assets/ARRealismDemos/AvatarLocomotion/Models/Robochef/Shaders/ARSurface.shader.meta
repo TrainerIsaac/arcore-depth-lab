@@ -1,0 +1,13 @@
+fileFormatVersion: 2
+<<<<<<< HEAD:Assets/ARRealismDemos/Relighting/Shaders/ArCoreFragment.glslinc.meta
+guid: 0d4429a4601ac464786d0ec46e2855aa
+=======
+guid: d982fa74f59b00c44b5716191e12e4c7
+>>>>>>> parent of 07c8907 (Merge branch 'master' of https://github.com/TrainerIsaac/arcore-depth-lab):Assets/ARRealismDemos/AvatarLocomotion/Models/Robochef/Shaders/ARSurface.shader.meta
+ShaderImporter:
+  externalObjects: {}
+  defaultTextures: []
+  nonModifiableTextures: []
+  userData: 
+  assetBundleName: 
+  assetBundleVariant: 
