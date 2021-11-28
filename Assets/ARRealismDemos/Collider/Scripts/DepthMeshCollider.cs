@@ -129,6 +129,7 @@ public class DepthMeshCollider : MonoBehaviour
 
     public GameObject depthChecker;
     private Quaternion depthFireDirection;
+    private bool checkDelay = false;
 
     /// <summary>
     /// Throws a game object for the collision test.
@@ -252,7 +253,7 @@ public class DepthMeshCollider : MonoBehaviour
     private void Update()
     {
         Vector3 playerPos = DepthSource.ARCamera.transform.position;
-        
+
         if (Input.touchCount > 0)
         {
             if (Input.GetTouch(0).phase == TouchPhase.Began && coolDown == false)
@@ -304,8 +305,28 @@ public class DepthMeshCollider : MonoBehaviour
             }
         }
 
-        Vector3 randomDir = new Vector3(Random.Range(-15, 15), Random.Range(-15, 15), Random.Range(0, 80));
-        Vector3 checkDir = DepthSource.ARCamera.ScreenToWorldPoint(new Vector3(500, 1000, 0.3f));
+        if(checkDelay == false)
+        {
+            StartCoroutine(StaggerDepthCheck());
+        }
+
+    }
+
+    IEnumerator StaggerDepthCheck()
+    {
+        checkDelay = true;
+
+        yield return new WaitForSeconds(0.1f);
+
+
+        checkDelay = false;
+
+        ShootProjectile();
+
+        Vector3 playerPos = DepthSource.ARCamera.transform.position;
+        Vector3 randomDir = new Vector3(Random.Range(-15, 15), Random.Range(-7.5f, 7.5f), Random.Range(0, 80));
+
+        Vector3 checkDir = DepthSource.ARCamera.ScreenToWorldPoint(new Vector3(500 + (Random.Range(-500, 500)), 1000 + Random.Range(-1000f, 1000f), 0.3f));
         Quaternion playerDir = GameObject.FindGameObjectWithTag("MainCamera").transform.rotation;
 
         Vector3 newdir = checkDir - new Vector3(playerPos.x, playerPos.y, playerPos.z);
@@ -313,10 +334,10 @@ public class DepthMeshCollider : MonoBehaviour
 
         depthFireDirection = Quaternion.LookRotation(newdir + randomDir) * playerDir;
 
-        //ShootProjectile();
         depthChecker.GetComponent<DepthChecker>().fireRotation = depthFireDirection;
         Instantiate(depthChecker, checkDir, depthFireDirection);
         depthChecker.transform.parent = _root.transform;
+
     }
 
     private void InitializeMesh()
