@@ -6,7 +6,6 @@ TagManager:
   tags:
   - ProjectileB
   - EnvironmentPiece
-  - EnviroChecker
   layers:
   - Default
   - TransparentFX
