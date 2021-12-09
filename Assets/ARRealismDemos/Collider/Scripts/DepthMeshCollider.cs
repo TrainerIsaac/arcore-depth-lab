@@ -254,23 +254,23 @@ public class DepthMeshCollider : MonoBehaviour
     {
         Vector3 playerPos = DepthSource.ARCamera.transform.position;
 
-        if (Input.touchCount > 0)
-        {
-            if (Input.GetTouch(0).phase == TouchPhase.Began && coolDown == false)
-            {
-                ShootProjectile();
-                Vector3 touchPos = DepthSource.ARCamera.ScreenToWorldPoint((Vector3)Input.GetTouch(0).position + new Vector3(0, 0, 0.1f));
+        //if (Input.touchCount > 0)
+        //{
+        //    if (Input.GetTouch(0).phase == TouchPhase.Began && coolDown == false)
+        //    {
+        //        ShootProjectile();
+        //        Vector3 touchPos = DepthSource.ARCamera.ScreenToWorldPoint((Vector3)Input.GetTouch(0).position + new Vector3(0, 0, 0.1f));
 
-                Vector3 dir = touchPos - (new Vector3(playerPos.x, playerPos.y, playerPos.z));
-                dir.Normalize();
+        //        Vector3 dir = touchPos - (new Vector3(playerPos.x, playerPos.y, playerPos.z));
+        //        dir.Normalize();
 
-                bullet = Instantiate(projectile, touchPos, Quaternion.LookRotation(dir)) as GameObject;
-                bullet.GetComponent<ProjectileScript>().Origin = DepthSource.ARCamera.gameObject;
-                coolDown = true;
-                StartCoroutine(BulletCool());
-                bullet.transform.parent = _root.transform;
-            }
-        }
+        //        bullet = Instantiate(projectile, touchPos, Quaternion.LookRotation(dir)) as GameObject;
+        //        bullet.GetComponent<ProjectileScript>().Origin = DepthSource.ARCamera.gameObject;
+        //        coolDown = true;
+        //        StartCoroutine(BulletCool());
+        //        bullet.transform.parent = _root.transform;
+        //    }
+        //}
 
         if (_initialized)
         {
